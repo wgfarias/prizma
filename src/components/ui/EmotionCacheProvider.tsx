@@ -17,13 +17,13 @@ export default function EmotionCacheProvider({
     cache.compat = true;
     const prevInsert = cache.insert;
     let inserted: string[] = [];
-    cache.insert = (...args: unknown[]) => {
+    cache.insert = ((...args: unknown[]) => {
       const serialized = args[1] as { name: string };
       if (serialized && cache.inserted[serialized.name] === undefined) {
         inserted.push(serialized.name);
       }
-      return (prevInsert as (...a: unknown[]) => unknown)(...args);
-    };
+      return (prevInsert as (...a: unknown[]) => string | void)(...args);
+    }) as typeof prevInsert;
     const flush = () => {
       const prevInserted = inserted;
       inserted = [];
