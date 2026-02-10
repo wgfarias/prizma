@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Prizma - BPO e Contabilidade",
   description: "Plataforma para escritórios de contabilidade e seus clientes",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

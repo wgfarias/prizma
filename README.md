@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Prizma - BPO e Contabilidade
 
-## Getting Started
+Aplicação web PWA multi-tenant para escritórios de contabilidade e seus clientes. Inclui integração com Nibo (ERP) e WhatsApp via Evolution API.
 
-First, run the development server:
+## Stack
+
+- **Frontend:** Next.js (App Router), MUI, TypeScript
+- **Auth e Banco:** Supabase (Auth, PostgreSQL, RLS)
+- **Hospedagem:** Vercel
+- **Integrações:** Nibo API, Evolution API (WhatsApp)
+
+## Pré-requisitos
+
+- Node.js 18+
+- Conta Supabase
+- (Opcional) Instância Evolution API para WhatsApp
+- (Opcional) Plano Premium Nibo para integração
+
+## Configuração
+
+1. Clone o repositório e instale as dependências:
+
+```bash
+npm install
+```
+
+2. Copie o arquivo de ambiente e preencha as variáveis:
+
+```bash
+cp .env.example .env.local
+```
+
+Variáveis obrigatórias:
+
+- `NEXT_PUBLIC_SUPABASE_URL` – URL do projeto Supabase
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` – Chave anon do Supabase
+- `SUPABASE_SERVICE_ROLE_KEY` – Chave service role (cadastro de escritório)
+
+Variáveis opcionais:
+
+- `EVOLUTION_API_URL` – URL da sua Evolution API (WhatsApp)
+- `EVOLUTION_API_KEY` – Chave global da Evolution (se não configurar por tenant)
+
+3. Aplique as migrations no Supabase:
+
+- No Dashboard do Supabase, vá em SQL Editor e execute, em ordem, os arquivos em `supabase/migrations/`.
+
+4. No Supabase, configure o provedor Google em Authentication > Providers para login com Google.
+
+5. Inicie o servidor de desenvolvimento:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Fluxos principais
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Cadastro:** Página inicial > "Cadastrar escritório" > preencha nome, e-mail e senha > primeiro usuário vira admin do tenant.
+- **Login:** E-mail/senha ou Google; redirecionamento por perfil (escritório → dashboard, cliente → portal).
+- **Dashboard:** Clientes (listar/cadastrar/excluir), Configurações (Evolution API), Integrações (Nibo + sync).
+- **Portal:** Área do cliente (dados vinculados ao seu usuário).
+- **Webhook Evolution:** `POST /api/webhooks/evolution` – configure esta URL na Evolution API para receber eventos.
 
-## Learn More
+## Estrutura
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app/(auth)` – Login e cadastro
+- `src/app/(dashboard)` – Área do escritório (multi-tenant)
+- `src/app/(portal)` – Área do cliente
+- `src/app/api` – Route Handlers (auth callback, signout, webhook)
+- `src/lib` – Supabase, Nibo, Evolution, auth
+- `supabase/migrations` – Schema e RLS
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy (Vercel)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Configure as mesmas variáveis de ambiente no projeto Vercel e faça o deploy. A URL do webhook Evolution será `https://seu-dominio.vercel.app/api/webhooks/evolution`.

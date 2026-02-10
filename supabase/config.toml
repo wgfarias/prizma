@@ -1,0 +1,10 @@
+# Supabase local config (optional)
+# Run: npx supabase init already created migrations folder.
+# Apply migrations in Supabase Dashboard SQL Editor or via CLI: supabase db push
+
+[api]
+enabled = true
+port = 54321
+
+[db]
+port = 54322

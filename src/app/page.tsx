@@ -1,32 +1,47 @@
 import Link from "next/link";
-import { Button, Box, Typography } from "@mui/material";
 
 export default function HomePage() {
   return (
-    <Box
-      sx={{
+    <div
+      style={{
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 2,
+        gap: "16px",
       }}
     >
-      <Typography variant="h3" component="h1">
-        Prizma
-      </Typography>
-      <Typography color="text.secondary">
-        BPO e Contabilidade
-      </Typography>
-      <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-        <Button component={Link} href="/login" variant="contained">
+      <h1 style={{ fontSize: "2rem", fontWeight: 600, margin: 0 }}>Prizma</h1>
+      <p style={{ color: "#666", margin: 0 }}>BPO e Contabilidade</p>
+      <div style={{ display: "flex", gap: "16px", marginTop: "16px" }}>
+        <Link
+          href="/login"
+          style={{
+            textDecoration: "none",
+            padding: "8px 20px",
+            backgroundColor: "#1976d2",
+            color: "#fff",
+            borderRadius: "4px",
+            fontWeight: 500,
+          }}
+        >
           Entrar
-        </Button>
-        <Button component={Link} href="/cadastro" variant="outlined">
+        </Link>
+        <Link
+          href="/cadastro"
+          style={{
+            textDecoration: "none",
+            padding: "8px 20px",
+            border: "1px solid #1976d2",
+            color: "#1976d2",
+            borderRadius: "4px",
+            fontWeight: 500,
+          }}
+        >
           Cadastrar escritório
-        </Button>
-      </Box>
-    </Box>
+        </Link>
+      </div>
+    </div>
   );
 }

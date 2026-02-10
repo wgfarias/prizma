@@ -1,8 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const protectedPaths = ["/dashboard", "/portal"];
+const authPaths = ["/login", "/cadastro"];
+
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
+  let response = NextResponse.next({
     request,
   });
 
@@ -15,15 +18,42 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
           );
         },
       },
     }
   );
 
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return supabaseResponse;
+  const pathname = request.nextUrl.pathname;
+  const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
+  const isAuthPath = authPaths.some((p) => pathname.startsWith(p));
+
+  if (isProtected && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("next", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isAuthPath) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    const redirectTo =
+      profile?.role === "client" ? "/portal/portal" : "/dashboard";
+    const url = request.nextUrl.clone();
+    url.pathname = redirectTo;
+    return NextResponse.redirect(url);
+  }
+
+  return response;
 }
