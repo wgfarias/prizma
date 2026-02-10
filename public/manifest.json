@@ -1,0 +1,10 @@
+{
+  "name": "Prizma - BPO e Contabilidade",
+  "short_name": "Prizma",
+  "description": "Plataforma para escritórios de contabilidade e seus clientes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1976d2",
+  "lang": "pt-BR"
+}
